@@ -64,9 +64,7 @@ describe('useTaskListViewModel', () => {
   });
 
   it('reloads tasks when loadTasks is called manually', async () => {
-    mockedTaskService.getTasks
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce(mockTasks);
+    mockedTaskService.getTasks.mockResolvedValueOnce([]).mockResolvedValueOnce(mockTasks);
 
     const { result } = renderHook(() => useTaskListViewModel());
 

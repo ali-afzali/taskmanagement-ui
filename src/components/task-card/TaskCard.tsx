@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-} from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -45,7 +38,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDeleted, overlay })
         <DragIndicatorIcon
           {...listeners}
           {...attributes}
-          sx={{ color: 'text.disabled', mt: 0.3, cursor: overlay ? 'grabbing' : 'grab', flexShrink: 0 }}
+          sx={{
+            color: 'text.disabled',
+            mt: 0.3,
+            cursor: overlay ? 'grabbing' : 'grab',
+            flexShrink: 0,
+          }}
         />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }} gutterBottom>

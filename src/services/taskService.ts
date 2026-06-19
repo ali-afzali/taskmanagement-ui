@@ -1,6 +1,6 @@
 import { TaskItem, CreateTaskDto, UpdateTaskDto } from '../types/TaskItem';
 
-const API_BASE_URL = 'https://localhost:7217';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL ?? 'https://localhost:7217';
 
 export const taskService = {
   async getTasks(): Promise<TaskItem[]> {

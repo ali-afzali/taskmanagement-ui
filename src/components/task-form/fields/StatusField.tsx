@@ -14,7 +14,7 @@ const StatusField: React.FC<StatusFieldProps> = ({ value, onChange }) => (
       labelId="status-label"
       label="Status"
       value={value}
-      onChange={(e) => onChange(Number(e.target.value) as TaskItemStatus)}
+      onChange={e => onChange(Number(e.target.value) as TaskItemStatus)}
     >
       <MenuItem value={TaskItemStatus.NotStarted}>Not Started</MenuItem>
       <MenuItem value={TaskItemStatus.InProgress}>In Progress</MenuItem>

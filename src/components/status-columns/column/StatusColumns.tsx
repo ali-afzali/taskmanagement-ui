@@ -11,12 +11,16 @@ export interface ColumnsProps {
 }
 
 const COLUMNS: ColumnConfig[] = [
-  { status: TaskItemStatus.NotStarted, label: 'Not Started', color: '#f5f5f5', chipColor: 'default' },
+  {
+    status: TaskItemStatus.NotStarted,
+    label: 'Not Started',
+    color: '#f5f5f5',
+    chipColor: 'default',
+  },
   { status: TaskItemStatus.InProgress, label: 'In Progress', color: '#e3f2fd', chipColor: 'info' },
-  { status: TaskItemStatus.Completed,  label: 'Completed',   color: '#e8f5e9', chipColor: 'success' },
-  { status: TaskItemStatus.Cancelled,  label: 'Cancelled',   color: '#fce4ec', chipColor: 'error' },
+  { status: TaskItemStatus.Completed, label: 'Completed', color: '#e8f5e9', chipColor: 'success' },
+  { status: TaskItemStatus.Cancelled, label: 'Cancelled', color: '#fce4ec', chipColor: 'error' },
 ];
-
 
 const StatusColumns: React.FC<ColumnsProps> = ({ tasks, overId, onEdit, onDeleted }) => (
   <>

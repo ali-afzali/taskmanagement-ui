@@ -38,21 +38,28 @@ export function useTaskListViewModel(): TaskListViewModel {
     setTasks(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  const handleStatusChange = useCallback(async (id: number, newStatus: TaskItemStatus) => {
-    const task = tasks.find(t => t.id === id);
-    if (!task || task.status === newStatus) return;
+  const handleStatusChange = useCallback(
+    async (id: number, newStatus: TaskItemStatus) => {
+      const task = tasks.find(t => t.id === id);
+      if (!task || task.status === newStatus) return;
 
-    // Optimistic update
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+      // Optimistic update
+      setTasks(prev => prev.map(t => (t.id === id ? { ...t, status: newStatus } : t)));
 
-    try {
-      await taskService.updateTask(id, { title: task.title, description: task.description, status: newStatus });
-    } catch (err) {
-      // Revert on failure
-      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: task.status } : t));
-      console.error(err);
-    }
-  }, [tasks]);
+      try {
+        await taskService.updateTask(id, {
+          title: task.title,
+          description: task.description,
+          status: newStatus,
+        });
+      } catch (err) {
+        // Revert on failure
+        setTasks(prev => prev.map(t => (t.id === id ? { ...t, status: task.status } : t)));
+        console.error(err);
+      }
+    },
+    [tasks]
+  );
 
   return { tasks, loading, error, loadTasks, removeTask, handleStatusChange };
 }

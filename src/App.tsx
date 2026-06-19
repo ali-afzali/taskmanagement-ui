@@ -40,13 +40,7 @@ function App() {
         <TaskList key={refreshKey} onTaskSelect={handleTaskSelect} />
       </Box>
 
-      {showForm && (
-        <TaskForm
-          task={selectedTask}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      )}
+      {showForm && <TaskForm task={selectedTask} onSave={handleSave} onCancel={handleCancel} />}
     </>
   );
 }

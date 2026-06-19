@@ -14,7 +14,10 @@ export interface TaskFormViewModel {
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }
 
-export function useTaskFormViewModel(task: TaskItem | undefined, onSave: () => void): TaskFormViewModel {
+export function useTaskFormViewModel(
+  task: TaskItem | undefined,
+  onSave: () => void
+): TaskFormViewModel {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskItemStatus>(TaskItemStatus.NotStarted);
@@ -29,34 +32,37 @@ export function useTaskFormViewModel(task: TaskItem | undefined, onSave: () => v
     }
   }, [task]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (!title.trim()) {
-      setError('Title is required');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (task) {
-        const updateDto: UpdateTaskDto = { title, description, status };
-        await taskService.updateTask(task.id, updateDto);
-      } else {
-        const createDto: CreateTaskDto = { title, description, status };
-        await taskService.createTask(createDto);
+      if (!title.trim()) {
+        setError('Title is required');
+        return;
       }
 
-      onSave();
-    } catch (err) {
-      setError('Failed to save task. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [title, description, status, task, onSave]);
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (task) {
+          const updateDto: UpdateTaskDto = { title, description, status };
+          await taskService.updateTask(task.id, updateDto);
+        } else {
+          const createDto: CreateTaskDto = { title, description, status };
+          await taskService.createTask(createDto);
+        }
+
+        onSave();
+      } catch (err) {
+        setError('Failed to save task. Please try again.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [title, description, status, task, onSave]
+  );
 
   return {
     title,

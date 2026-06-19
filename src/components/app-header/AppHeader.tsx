@@ -12,12 +12,7 @@ function AppHeader({ onNewTask }: AppHeaderProps) {
         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
           Task Management
         </Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          startIcon={<AddIcon />}
-          onClick={onNewTask}
-        >
+        <Button variant="contained" color="secondary" startIcon={<AddIcon />} onClick={onNewTask}>
           New Task
         </Button>
       </Toolbar>

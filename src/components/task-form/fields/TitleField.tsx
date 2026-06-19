@@ -12,7 +12,7 @@ const TitleField: React.FC<TitleFieldProps> = ({ value, onChange }) => (
     required
     fullWidth
     value={value}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={e => onChange(e.target.value)}
     placeholder="Enter task title"
     autoFocus
   />

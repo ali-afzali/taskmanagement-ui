@@ -6,7 +6,10 @@ export interface TaskCardViewModel {
   handleDelete: () => Promise<void>;
 }
 
-export function useTaskCardViewModel(task: TaskItem, onDeleted: (id: number) => void): TaskCardViewModel {
+export function useTaskCardViewModel(
+  task: TaskItem,
+  onDeleted: (id: number) => void
+): TaskCardViewModel {
   const handleDelete = useCallback(async () => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {

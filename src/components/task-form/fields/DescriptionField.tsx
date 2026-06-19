@@ -13,7 +13,7 @@ const DescriptionField: React.FC<DescriptionFieldProps> = ({ value, onChange }) 
     multiline
     rows={4}
     value={value}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={e => onChange(e.target.value)}
     placeholder="Enter task description"
   />
 );

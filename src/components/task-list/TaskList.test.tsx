@@ -46,8 +46,20 @@ const mockedUseViewModel = useTaskListViewModel as jest.MockedFunction<typeof us
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const mockTasks: TaskItem[] = [
-  { id: 1, title: 'Task One', description: 'Desc one', status: TaskItemStatus.NotStarted, createdDate: '2024-01-01' },
-  { id: 2, title: 'Task Two', description: 'Desc two', status: TaskItemStatus.InProgress, createdDate: '2024-01-02' },
+  {
+    id: 1,
+    title: 'Task One',
+    description: 'Desc one',
+    status: TaskItemStatus.NotStarted,
+    createdDate: '2024-01-01',
+  },
+  {
+    id: 2,
+    title: 'Task Two',
+    description: 'Desc two',
+    status: TaskItemStatus.InProgress,
+    createdDate: '2024-01-02',
+  },
 ];
 
 const defaultViewModel = {
@@ -105,7 +117,12 @@ describe('TaskList', () => {
 
     it('calls loadTasks when Retry is clicked', () => {
       const loadTasks = jest.fn();
-      mockedUseViewModel.mockReturnValue({ ...defaultViewModel, loading: false, error: 'Error', loadTasks });
+      mockedUseViewModel.mockReturnValue({
+        ...defaultViewModel,
+        loading: false,
+        error: 'Error',
+        loadTasks,
+      });
       renderTaskList();
       fireEvent.click(screen.getByRole('button', { name: /retry/i }));
       expect(loadTasks).toHaveBeenCalledTimes(1);

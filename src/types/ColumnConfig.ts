@@ -1,4 +1,4 @@
-import { TaskItemStatus } from "./TaskItem";
+import { TaskItemStatus } from './TaskItem';
 
 export interface ColumnConfig {
   status: TaskItemStatus;

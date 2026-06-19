@@ -20,13 +20,12 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ onTaskSelect }) => {
-  const { tasks, loading, error, loadTasks, removeTask, handleStatusChange } = useTaskListViewModel();
+  const { tasks, loading, error, loadTasks, removeTask, handleStatusChange } =
+    useTaskListViewModel();
   const [activeTask, setActiveTask] = React.useState<TaskItem | null>(null);
   const [overId, setOverId] = React.useState<TaskItemStatus | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   if (loading) {
     return (
@@ -39,9 +38,14 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskSelect }) => {
   if (error) {
     return (
       <Box sx={{ mt: 4 }}>
-        <Alert severity="error" action={
-          <Button color="inherit" size="small" onClick={loadTasks}>Retry</Button>
-        }>
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={loadTasks}>
+              Retry
+            </Button>
+          }
+        >
           {error}
         </Alert>
       </Box>
@@ -78,9 +82,7 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskSelect }) => {
       </Box>
 
       <DragOverlay>
-        {activeTask && (
-          <TaskCard task={activeTask} onDeleted={removeTask} overlay />
-        )}
+        {activeTask && <TaskCard task={activeTask} onDeleted={removeTask} overlay />}
       </DragOverlay>
     </DndContext>
   );

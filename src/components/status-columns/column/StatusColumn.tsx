@@ -15,7 +15,14 @@ export interface StatusColumnProps {
 }
 
 const StatusColumn: React.FC<StatusColumnProps> = ({
-  status, label, color, chipColor, tasks, onEdit, onDeleted, isOver,
+  status,
+  label,
+  color,
+  chipColor,
+  tasks,
+  onEdit,
+  onDeleted,
+  isOver,
 }) => {
   const { setNodeRef } = useDroppable({ id: status });
 
