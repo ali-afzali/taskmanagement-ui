@@ -82,6 +82,11 @@ REACT_APP_API_BASE_URL=https://localhost:7217
 - Add filtering and sorting to the task list
 - Improve error messages — right now validation errors from the API are shown generically
 
+
+## Testing
+
+A sample test suite is included using Jest and React Testing Library. Run with `npm test`.
+
 ## Repositories
 
 - Frontend: https://github.com/ali-afzali/taskmanagement-ui
