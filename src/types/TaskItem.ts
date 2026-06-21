@@ -12,16 +12,23 @@ export interface TaskItem {
   status: TaskItemStatus;
   createdDate: string;
   updatedDate?: string;
+  assigneeUserId: number;
+  createdByUserId: number;
+  updatedByUserId?: number;
 }
 
 export interface CreateTaskDto {
   title: string;
   description: string;
   status?: TaskItemStatus;
+  assigneeUserId?: number;
+  createdByUserId?: number;
 }
 
 export interface UpdateTaskDto {
   title: string;
   description: string;
   status: TaskItemStatus;
+  assigneeUserId?: number;
+  updatedByUserId?: number;
 }

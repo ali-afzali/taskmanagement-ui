@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, CircularProgress, Alert, Button } from '@mui/material';
+import { Box, CircularProgress, Alert, Button, Snackbar } from '@mui/material';
 import {
   DndContext,
   DragEndEvent,
@@ -20,8 +20,16 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ onTaskSelect }) => {
-  const { tasks, loading, error, loadTasks, removeTask, handleStatusChange } =
-    useTaskListViewModel();
+  const {
+    tasks,
+    loading,
+    error,
+    notification,
+    loadTasks,
+    deleteTask,
+    clearNotification,
+    handleStatusChange,
+  } = useTaskListViewModel();
   const [activeTask, setActiveTask] = React.useState<TaskItem | null>(null);
   const [overId, setOverId] = React.useState<TaskItemStatus | null>(null);
 
@@ -71,20 +79,43 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskSelect }) => {
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2 }}>
-        <StatusColumns tasks={tasks} overId={overId} onEdit={onTaskSelect} onDeleted={removeTask} />
-      </Box>
+    <>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2 }}>
+          <StatusColumns
+            tasks={tasks}
+            overId={overId}
+            onEdit={onTaskSelect}
+            onDeleted={deleteTask}
+          />
+        </Box>
 
-      <DragOverlay>
-        {activeTask && <TaskCard task={activeTask} onDeleted={removeTask} overlay />}
-      </DragOverlay>
-    </DndContext>
+        <DragOverlay>
+          {activeTask && <TaskCard task={activeTask} onDeleted={deleteTask} overlay />}
+        </DragOverlay>
+      </DndContext>
+
+      <Snackbar
+        open={!!notification}
+        autoHideDuration={4000}
+        onClose={clearNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={clearNotification}
+          severity={notification?.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {notification?.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

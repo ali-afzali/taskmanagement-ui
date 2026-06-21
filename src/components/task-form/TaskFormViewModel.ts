@@ -55,8 +55,7 @@ export function useTaskFormViewModel(
 
         onSave();
       } catch (err) {
-        setError('Failed to save task. Please try again.');
-        console.error(err);
+        setError(err instanceof Error ? err.message : 'Failed to save task. Please try again.');
       } finally {
         setLoading(false);
       }

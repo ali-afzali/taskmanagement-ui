@@ -1,46 +1,90 @@
-# Getting Started with Create React App
+# Task Management UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- Frontend: https://github.com/ali-afzali/taskmanagement-ui
+- Backend: https://github.com/ali-afzali/TaskManagementApi
 
-## Available Scripts
+React frontend for the task management take-home.
 
-In the project directory, you can run:
+## What this project does
 
-### `npm start`
+- JWT-based login and logout
+- View all tasks in a board layout with status columns
+- Drag and drop tasks between columns to change their status
+- Create, edit, and delete tasks
+- Form validation before submitting
+- Redirects to login automatically on session expiry
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Tech stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- React 19
+- TypeScript
+- Create React App
+- Material UI (MUI v5) for components and styling
+- `@dnd-kit/core` for drag and drop
 
-### `npm test`
+## Running locally
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node 18+ (or check `.nvmrc` if present)
+- The backend running at `https://localhost:7217`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Start the app
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+npm run start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Opens at `http://localhost:3000`.
 
-### `npm run eject`
+## Default login
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Use the seeded credentials from the backend:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Username: `admin`
+- Password: `123456`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Connecting to the backend
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The API base URL is set in `.env`:
 
-## Learn More
+```
+REACT_APP_API_BASE_URL=https://localhost:7217
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## What I built
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Login and logout flow with the JWT token stored in sessionStorage
+- Task board with status columns (Not Started, In Progress, Completed, Cancelled)
+- Drag and drop tasks between columns to update their status
+- Create task form with validation — title is required
+- Edit task form pre-populated with existing values
+- Delete with immediate list update
+- HTTP 401 handling that sends the user back to the login screen
+
+## What I left out
+
+- No per-user task isolation — all logged-in users see and can modify all tasks
+- No filtering or sorting on the task list
+- No pagination
+- No user registration flow — only the seeded admin account works
+- No persistent token storage — the token lives in sessionStorage, so closing the browser tab requires logging in again
+
+## Known issues
+
+- Data resets when the backend restarts because the backend uses an in-memory database. That is a backend constraint, not a frontend one.
+- The token is stored in sessionStorage. Closing the browser tab logs the user out, but a page refresh within the same tab keeps the session active.
+
+## If I had another day
+
+- Make task ownership explicit — filter the task list to only show tasks belonging to the logged-in user, and block API calls to tasks owned by others
+- Add filtering and sorting to the task list
+- Improve error messages — right now validation errors from the API are shown generically
+
+## Repositories
+
+- Frontend: https://github.com/ali-afzali/taskmanagement-ui
+- Backend: https://github.com/ali-afzali/TaskManagementApi
+
+The backend has CORS configured for `http://localhost:3000`, so the frontend must run on that port.

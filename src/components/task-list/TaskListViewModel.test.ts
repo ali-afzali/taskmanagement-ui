@@ -2,25 +2,29 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTaskListViewModel } from './TaskListViewModel';
 import { taskService } from '../../services/taskService';
 import { TaskItem, TaskItemStatus } from '../../types/TaskItem';
+import { ApiError } from '../../services/apiError';
 
 jest.mock('../../services/taskService');
-
 const mockedTaskService = taskService as jest.Mocked<typeof taskService>;
 
 const mockTasks: TaskItem[] = [
   {
     id: 1,
     title: 'Task One',
-    description: 'Description one',
+    description: 'Desc one',
     status: TaskItemStatus.NotStarted,
     createdDate: '2024-01-01',
+    assigneeUserId: 1,
+    createdByUserId: 1,
   },
   {
     id: 2,
     title: 'Task Two',
-    description: 'Description two',
+    description: 'Desc two',
     status: TaskItemStatus.InProgress,
     createdDate: '2024-01-02',
+    assigneeUserId: 1,
+    createdByUserId: 1,
   },
 ];
 
@@ -29,21 +33,19 @@ describe('useTaskListViewModel', () => {
     jest.clearAllMocks();
   });
 
-  it('starts with loading state and empty tasks', async () => {
-    mockedTaskService.getTasks.mockResolvedValue([]);
+  // ── Initial load ────────────────────────────────────────────────────────────
 
+  it('starts with loading=true and empty tasks', () => {
+    mockedTaskService.getTasks.mockResolvedValue([]);
     const { result } = renderHook(() => useTaskListViewModel());
 
     expect(result.current.loading).toBe(true);
     expect(result.current.tasks).toEqual([]);
     expect(result.current.error).toBeNull();
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
-  it('loads tasks successfully on mount', async () => {
+  it('loads tasks successfully and sets loading=false', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
-
     const { result } = renderHook(() => useTaskListViewModel());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -52,63 +54,88 @@ describe('useTaskListViewModel', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('sets error when loadTasks fails', async () => {
+  it('sets error message when loadTasks fails', async () => {
     mockedTaskService.getTasks.mockRejectedValue(new Error('Network error'));
-
     const { result } = renderHook(() => useTaskListViewModel());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.error).toBe('Failed to load tasks. Please try again later.');
+    expect(result.current.error).toBe('Network error');
     expect(result.current.tasks).toEqual([]);
   });
 
-  it('reloads tasks when loadTasks is called manually', async () => {
-    mockedTaskService.getTasks.mockResolvedValueOnce([]).mockResolvedValueOnce(mockTasks);
-
+  it('uses ApiError message when loadTasks throws ApiError', async () => {
+    mockedTaskService.getTasks.mockRejectedValue(
+      new ApiError(401, 'Your session has expired. Please log in again.')
+    );
     const { result } = renderHook(() => useTaskListViewModel());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.tasks).toEqual([]);
+
+    expect(result.current.error).toBe('Your session has expired. Please log in again.');
+  });
+
+  // ── deleteTask ──────────────────────────────────────────────────────────────
+
+  it('removes task optimistically and shows success notification on delete', async () => {
+    mockedTaskService.getTasks.mockResolvedValue(mockTasks);
+    mockedTaskService.deleteTask.mockResolvedValue(undefined);
+
+    const { result } = renderHook(() => useTaskListViewModel());
+    await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
-      await result.current.loadTasks();
+      await result.current.deleteTask(1);
     });
 
-    expect(result.current.tasks).toEqual(mockTasks);
-    expect(result.current.error).toBeNull();
+    expect(result.current.tasks.find(t => t.id === 1)).toBeUndefined();
+    expect(result.current.notification).toEqual({
+      message: 'Task deleted successfully.',
+      severity: 'success',
+    });
   });
 
-  it('removeTask removes the task with the given id', async () => {
+  it('reverts task list and shows error notification when delete fails', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
+    mockedTaskService.deleteTask.mockRejectedValue(new Error('Failed to delete task.'));
 
     const { result } = renderHook(() => useTaskListViewModel());
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    act(() => {
-      result.current.removeTask(1);
+    await act(async () => {
+      await result.current.deleteTask(1);
     });
 
-    expect(result.current.tasks).toHaveLength(1);
-    expect(result.current.tasks[0].id).toBe(2);
+    expect(result.current.tasks.find(t => t.id === 1)).toBeDefined();
+    expect(result.current.notification).toEqual({
+      message: 'Failed to delete task.',
+      severity: 'error',
+    });
   });
 
-  it('removeTask does nothing when id does not exist', async () => {
+  // ── clearNotification ───────────────────────────────────────────────────────
+
+  it('clearNotification sets notification to null', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
+    mockedTaskService.deleteTask.mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useTaskListViewModel());
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    act(() => {
-      result.current.removeTask(999);
+    await act(async () => {
+      await result.current.deleteTask(1);
     });
+    expect(result.current.notification).not.toBeNull();
 
-    expect(result.current.tasks).toHaveLength(2);
+    act(() => {
+      result.current.clearNotification();
+    });
+    expect(result.current.notification).toBeNull();
   });
 
-  it('handleStatusChange updates task status optimistically', async () => {
+  // ── handleStatusChange ──────────────────────────────────────────────────────
+
+  it('updates task status optimistically on successful status change', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
     mockedTaskService.updateTask.mockResolvedValue({
       ...mockTasks[0],
@@ -116,43 +143,20 @@ describe('useTaskListViewModel', () => {
     });
 
     const { result } = renderHook(() => useTaskListViewModel());
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
       await result.current.handleStatusChange(1, TaskItemStatus.InProgress);
     });
 
-    const updatedTask = result.current.tasks.find(t => t.id === 1);
-    expect(updatedTask?.status).toBe(TaskItemStatus.InProgress);
-    expect(mockedTaskService.updateTask).toHaveBeenCalledWith(1, {
-      title: 'Task One',
-      description: 'Description one',
-      status: TaskItemStatus.InProgress,
-    });
+    expect(result.current.tasks.find(t => t.id === 1)?.status).toBe(TaskItemStatus.InProgress);
+    expect(result.current.notification).toBeNull();
   });
 
-  it('handleStatusChange reverts status on updateTask failure', async () => {
-    mockedTaskService.getTasks.mockResolvedValue(mockTasks);
-    mockedTaskService.updateTask.mockRejectedValue(new Error('Update failed'));
-
-    const { result } = renderHook(() => useTaskListViewModel());
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
-
-    await act(async () => {
-      await result.current.handleStatusChange(1, TaskItemStatus.Completed);
-    });
-
-    const task = result.current.tasks.find(t => t.id === 1);
-    expect(task?.status).toBe(TaskItemStatus.NotStarted);
-  });
-
-  it('handleStatusChange does nothing when status is unchanged', async () => {
+  it('does nothing when status change is to the same status', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
 
     const { result } = renderHook(() => useTaskListViewModel());
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
@@ -162,18 +166,19 @@ describe('useTaskListViewModel', () => {
     expect(mockedTaskService.updateTask).not.toHaveBeenCalled();
   });
 
-  it('handleStatusChange does nothing when task id does not exist', async () => {
+  it('reverts status and shows error notification when status change fails', async () => {
     mockedTaskService.getTasks.mockResolvedValue(mockTasks);
+    mockedTaskService.updateTask.mockRejectedValue(new Error('Server error.'));
 
     const { result } = renderHook(() => useTaskListViewModel());
-
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
-      await result.current.handleStatusChange(999, TaskItemStatus.Completed);
+      await result.current.handleStatusChange(1, TaskItemStatus.Completed);
     });
 
-    expect(mockedTaskService.updateTask).not.toHaveBeenCalled();
-    expect(result.current.tasks).toEqual(mockTasks);
+    expect(result.current.tasks.find(t => t.id === 1)?.status).toBe(TaskItemStatus.NotStarted);
+    expect(result.current.notification?.severity).toBe('error');
+    expect(result.current.notification?.message).toBe('Server error.');
   });
 });

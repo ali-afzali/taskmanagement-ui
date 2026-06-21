@@ -4,7 +4,7 @@ const config = {
 
   // Use ts-jest to compile TypeScript test files
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', target: 'ES2015' } }],
   },
 
   // Run src/setupTests.ts before each test suite (loads @testing-library/jest-dom matchers)
