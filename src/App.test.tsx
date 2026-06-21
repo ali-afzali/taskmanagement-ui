@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
-import { getAuthToken } from './utils/storage';
-import { TaskItem, TaskItemStatus } from './types/TaskItem';
+import { getAuthToken, getAuthUsername } from './utils/storage';
+import { authenticationService } from './services/authenticationService';
 
 // ── Mock storage ──────────────────────────────────────────────────────────────
 jest.mock('./utils/storage', () => ({
@@ -63,7 +63,7 @@ jest.mock('./components/task-list/TaskList', () => ({
             id: 1,
             title: 'Existing Task',
             description: 'desc',
-            status: TaskItemStatus.NotStarted,
+            status: 0,
             createdDate: '2024-01-01',
             assigneeUserId: 1,
             createdByUserId: 1,
@@ -97,7 +97,13 @@ jest.mock('./components/task-form/TaskForm', () => ({
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 describe('App', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    // CRA's jest config has resetMocks:true which wipes mockReturnValue after each test.
+    // Re-apply defaults so the app starts in authenticated state by default.
+    (getAuthToken as jest.Mock).mockReturnValue('fake-token');
+    (getAuthUsername as jest.Mock).mockReturnValue('testuser');
+    (authenticationService.logout as jest.Mock).mockResolvedValue(undefined);
+  });
 
   // ── Auth gate ───────────────────────────────────────────────────────────────
 

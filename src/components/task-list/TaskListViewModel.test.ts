@@ -36,7 +36,7 @@ describe('useTaskListViewModel', () => {
   // ── Initial load ────────────────────────────────────────────────────────────
 
   it('starts with loading=true and empty tasks', () => {
-    mockedTaskService.getTasks.mockResolvedValue([]);
+    mockedTaskService.getTasks.mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useTaskListViewModel());
 
     expect(result.current.loading).toBe(true);
