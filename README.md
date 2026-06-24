@@ -45,14 +45,6 @@ Use the seeded credentials from the backend:
 - Username: `admin`
 - Password: `123456`
 
-### Connecting to the backend
-
-The API base URL is set in `.env`:
-
-```
-REACT_APP_API_BASE_URL=https://localhost:7217
-```
-
 ## What I built
 
 - Login and logout flow with the JWT token stored in sessionStorage
