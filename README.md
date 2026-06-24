@@ -1,9 +1,6 @@
 # Task Management UI
 
-- Frontend: https://github.com/ali-afzali/taskmanagement-ui
-- Backend: https://github.com/ali-afzali/TaskManagementApi
-
-React frontend for the task management take-home.
+React frontend for the task management.
 
 ## What this project does
 
